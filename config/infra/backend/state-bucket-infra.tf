@@ -5,6 +5,7 @@ terraform {
 resource "aws_s3_bucket" "state_bucket" {
   bucket = "s3888490-a2-backend"
   acl    = "private"
+  force_destroy = true
 }
 resource "aws_s3_bucket_versioning" "state_bucket_versioning" {
   bucket= aws_s3_bucket.state_bucket.id
