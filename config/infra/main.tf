@@ -154,6 +154,16 @@ resource "aws_instance" "a2-application" {
   # Use the "vms" security group
   security_groups = [aws_security_group.vms.id]
 
+  user_data = <<-EOF
+    #!/bin/bash
+    echo Installing nginx
+    sudo apt-get update -y
+    sudo apt-get install nginx -y
+    sudo chown :ubuntu /var/www/html
+    sudo chmod g+w /var/www/html
+    echo "<h1>Hello A2 EC2-${count.index + 1}</h1>" > /var/www/html/index.html
+  EOF
+
   tags = {
     # Set a name tag for the instance
     Name = "A2 EC2-${count.index + 1}"
