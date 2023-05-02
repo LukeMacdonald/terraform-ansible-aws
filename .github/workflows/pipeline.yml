@@ -10,7 +10,7 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
     env:
-      TF_VAR_path_to_ssh_public_key: "../key.pub"
+      TF_VAR_path_to_ssh_public_key: "../config/key.pub"
       TF_VAR_my_ip_address: "123.3.247.60"
       TF_VAR_allow_all_ip_addresses_to_access_database_server: "false"
       TF_VAR_vpc_cidr: "10.1.0.0/16"

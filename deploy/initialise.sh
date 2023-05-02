@@ -3,6 +3,7 @@
 # Set the directories for the backend and main Terraform configurations
 TERRAFORM_BACKEND_DIR="terraform/state-bucket"
 TERRAFORM_MAIN_DIR=".."
+ANSIBLE_DIR="../ansible"
 
 # Define a function to apply Terraform
 apply_terraform() {
@@ -32,3 +33,7 @@ fi
 cd "$TERRAFORM_MAIN_DIR" || exit
 apply_terraform
 terraform output -json > ../config/output/data.json
+
+cd "$ANSIBLE_DIR" || exit
+ansible-playbook db-playbook.yml -i inventory.yml --private-key ~/.ssh/github_sdo_key
+ansible-playbook app-playbook.yml -i inventory.yml --private-key ~/.ssh/github_sdo_key
