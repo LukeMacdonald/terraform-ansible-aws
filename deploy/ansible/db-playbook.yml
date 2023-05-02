@@ -50,5 +50,15 @@
           POSTGRES_DB=foo
         published_ports:
           - "0.0.0.0:5432:5432"
-        volumes:
-        - "/volume-data/snapshot-prod-data.sql:/docker-entrypoint-initdb.d/init.sql"
+
+    - name: Create table in database
+      command: >
+          docker exec foo psql -U pete -d foo -c "CREATE TABLE foos (id INT PRIMARY KEY, name TEXT, height TEXT);"
+
+    - name: Insert data into foos table
+      command: >
+        docker exec foo psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (1, 'Big Big Foo', '303cm');"
+
+    - name: Insert more data into foos table
+      command: >
+        docker exec foo psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (2, 'Lil Foo', '25cm');"
