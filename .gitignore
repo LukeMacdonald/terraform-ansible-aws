@@ -6,3 +6,4 @@ config/key.pub
 .DS_Store
 *.terraform/
 *.terraform.lock**
+data.json
