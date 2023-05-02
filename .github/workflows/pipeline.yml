@@ -1,0 +1,46 @@
+name: SDAO A2 Pipeline
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+jobs:
+  terraform:
+    working-directory: config/infra
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+     - name: Setup Terraform
+       uses: hashicorp/setup-terraform@v1
+       with:
+         terraform_version: latest
+     - name: Terraform Init
+       run: terraform init
+     - name: Terraform Plan
+       run: terraform plan
+     - name: Terraform Apply
+       env:
+         TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       run: terraform apply -auto-approve
+
+  clean-up:
+    working-directory: config/infra
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: latest
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Destory
+        env:
+          TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform destroy -auto-approve
