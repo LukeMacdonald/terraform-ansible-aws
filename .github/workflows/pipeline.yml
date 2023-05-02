@@ -33,6 +33,7 @@ jobs:
          terraform apply -auto-approve
 
   clean-up:
+    needs: [terraform]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
