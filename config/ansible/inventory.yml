@@ -1,0 +1,13 @@
+db_servers:
+  hosts:
+    db1:
+      ansible_host: "{{lookup('file', 'data.json') | from_json | json_query('db_ip.value')}}"
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+app_servers:
+  hosts:
+    app1:
+      ansible_host: "{{lookup('file', 'data.json') | from_json | json_query('app_instance1_ip.value')}}"
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    app2:
+      ansible_host: "{{lookup('file', 'data.json') | from_json | json_query('app_instance2_ip.value')}}"
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
