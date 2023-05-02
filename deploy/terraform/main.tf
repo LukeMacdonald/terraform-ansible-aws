@@ -101,12 +101,12 @@ resource "aws_key_pair" "admin" {
 
 # Create a Resource for creating a security group for VMs
 resource "aws_security_group" "vms" {
-  name   = "vms_for_a2_ec2_1"
+  name   = "vms_for_a2_ec2"
   vpc_id = aws_vpc.vpc.id
 
   # Allow inbound SSH traffic
   ingress {
-    from_port   = 0
+    from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
@@ -114,7 +114,7 @@ resource "aws_security_group" "vms" {
 
   # Allow inbound HTTP traffic
   ingress {
-    from_port   = 0
+    from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
@@ -122,16 +122,16 @@ resource "aws_security_group" "vms" {
 
   # PostgreSQL in
   ingress {
-    from_port   = 0
+    from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = local.allowed_cidrs_for_db
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Allow outbound HTTPS traffic
   egress {
     from_port   = 0
-    to_port     = 443
+    to_port     = 65535
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -153,16 +153,6 @@ resource "aws_instance" "a2-application" {
   key_name = aws_key_pair.admin.key_name
   # Use the "vms" security group
   security_groups = [aws_security_group.vms.id]
-
-  #  user_data = <<-EOF
-  #    #!/bin/bash
-  #    echo Installing nginx
-  #    sudo apt-get update -y
-  #    sudo apt-get install nginx -y
-  #    sudo chown :ubuntu /var/www/html
-  #    sudo chmod g+w /var/www/html
-  #    echo "<h1>Hello A2 EC2-${count.index + 1}</h1>" > /var/www/html/index.html
-  #  EOF
 
   tags = {
     # Set a name tag for the instance
