@@ -8,7 +8,6 @@ on:
       - '*'
 jobs:
   terraform:
-    working-directory: config/infra
     runs-on: ubuntu-latest
     steps:
      - name: Checkout code
@@ -18,17 +17,22 @@ jobs:
        with:
          terraform_version: latest
      - name: Terraform Init
-       run: terraform init
+       run: |
+         cd config/infra 
+         terraform init
      - name: Terraform Plan
-       run: terraform plan
+       run: | 
+         cd config/infra 
+         terraform plan
      - name: Terraform Apply
        env:
          TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
          TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-       run: terraform apply -auto-approve
+       run: |
+         cd config/infra 
+         terraform apply -auto-approve
 
   clean-up:
-    working-directory: config/infra
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -38,9 +42,13 @@ jobs:
         with:
           terraform_version: latest
       - name: Terraform Init
-        run: terraform init
+        run: |
+          cd config/infra 
+          terraform init
       - name: Terraform Destory
         env:
           TF_VAR_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           TF_VAR_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform destroy -auto-approve
+        run: |
+          cd config/infra 
+          terraform destroy -auto-approve
