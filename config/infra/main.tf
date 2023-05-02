@@ -154,15 +154,15 @@ resource "aws_instance" "a2-application" {
   # Use the "vms" security group
   security_groups = [aws_security_group.vms.id]
 
-  user_data = <<-EOF
-    #!/bin/bash
-    echo Installing nginx
-    sudo apt-get update -y
-    sudo apt-get install nginx -y
-    sudo chown :ubuntu /var/www/html
-    sudo chmod g+w /var/www/html
-    echo "<h1>Hello A2 EC2-${count.index + 1}</h1>" > /var/www/html/index.html
-  EOF
+#  user_data = <<-EOF
+#    #!/bin/bash
+#    echo Installing nginx
+#    sudo apt-get update -y
+#    sudo apt-get install nginx -y
+#    sudo chown :ubuntu /var/www/html
+#    sudo chmod g+w /var/www/html
+#    echo "<h1>Hello A2 EC2-${count.index + 1}</h1>" > /var/www/html/index.html
+#  EOF
 
   tags = {
     # Set a name tag for the instance
@@ -241,4 +241,15 @@ resource "aws_lb_listener" "front_end" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.alb_target.arn
   }
+}
+
+# Output EC2 Instance Public IPs
+output "app_instance1_ip" {
+  value = aws_instance.a2-application[0].public_ip
+}
+output "app_instance2_ip" {
+  value = aws_instance.a2-application[1].public_ip
+}
+output "db_ip" {
+  value = aws_instance.a2-db.public_ip
 }
