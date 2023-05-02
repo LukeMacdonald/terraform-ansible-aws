@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the directories for the backend and main Terraform configurations
-TERRAFORM_BACKEND_DIR="infra/backend"
+TERRAFORM_BACKEND_DIR="terraform/state-bucket"
 TERRAFORM_MAIN_DIR=".."
 
 # Define a function to apply Terraform
@@ -31,4 +31,4 @@ fi
 # Apply main configuration
 cd "$TERRAFORM_MAIN_DIR" || exit
 apply_terraform
-terraform output -json > ../ansible/data.json
+terraform output -json > ../config/output/data.json

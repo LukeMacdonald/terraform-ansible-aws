@@ -4,8 +4,8 @@
 arg1=$1
 
 # Set the directories for the backend and main Terraform configurations
-TERRAFORM_BACKEND_DIR="backend"
-TERRAFORM_MAIN_DIR="infra"
+TERRAFORM_BACKEND_DIR="state-bucket"
+TERRAFORM_MAIN_DIR="terraform"
 
 # Define a function to clear the backend resources
 clear_backend(){
