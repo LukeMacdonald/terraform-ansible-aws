@@ -9,6 +9,13 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_path_to_ssh_public_key: "~/config/key.pub"
+      TF_VAR_my_ip_address: "123.3.247.60"
+      TF_VAR_allow_all_ip_addresses_to_access_database_server: "false"
+      TF_VAR_vpc_cidr: "10.1.0.0/16"
+      TF_VAR_subnets: '{"subnet1":{"cidr":"10.1.1.0/24","name":"public-1a","az":"us-east-1a"},"subnet2":{"cidr":"10.1.2.0/24","name":"public-1b","az":"us-east-1b"}}'
+      TF_VAR_vms: '{"app":{"count":2},"db":{"count":1}}'
     steps:
      - name: Checkout code
        uses: actions/checkout@v3

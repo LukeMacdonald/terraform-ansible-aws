@@ -1,7 +1,6 @@
 config/infra/you.auto.tfvars
 app/package-lock.json
 app/node_modules
-config/key.pub
 .idea
 .DS_Store
 *.terraform/
