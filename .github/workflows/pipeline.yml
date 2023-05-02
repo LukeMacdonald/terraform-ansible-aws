@@ -80,4 +80,4 @@ jobs:
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
         run: |
           cd config/infra 
-          terraform destroy -auto-approve lock=false
+          terraform destroy -auto-approve -lock=false
