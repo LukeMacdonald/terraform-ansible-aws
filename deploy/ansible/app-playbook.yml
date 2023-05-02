@@ -1,4 +1,4 @@
-- name: Configure database server
+- name: Configure application server
   hosts: app_servers
   remote_user: ubuntu
   become: yes # sudo
@@ -39,7 +39,7 @@
         groups: docker
         append: yes
 
-    - name: Create & run database container
+    - name: Create & run application container
       community.docker.docker_container:
         name: "foo-app"
         image: "patrmitacr.azurecr.io/assignment2app:1.0.0"
