@@ -83,6 +83,7 @@ jobs:
                 ansible_host: ${{ steps.output.outputs.app_instance2_ip }}
                 ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
           EOF
+          cat deploy/ansible/inventory.yml
       - name: Copy private key
         run: |
           mkdir -p ~/.ssh
