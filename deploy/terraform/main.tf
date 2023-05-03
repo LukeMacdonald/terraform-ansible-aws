@@ -19,9 +19,9 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_s3_object" "public-key"{
+data "aws_s3_object" "public-key" {
   bucket = "s3888490-a2-backend"
-  key = "config/public_key.txt"
+  key    = "config/public_key.txt"
 }
 
 # Create a Resource for creating a VPC
@@ -97,7 +97,7 @@ resource "aws_key_pair" "admin" {
   key_name = "admin-key"
   # Use the path to the public key file defined in the input variables
   public_key = data.aws_s3_object.public-key.body
-#  public_key = file(var.path_to_ssh_public_key)
+  #  public_key = file(var.path_to_ssh_public_key)
 }
 
 # Create a Resource for creating a security group for VMs
