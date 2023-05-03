@@ -49,11 +49,9 @@ jobs:
        run: | 
          cd deploy/terraform
          terraform plan -input=false -lock=false -detailed-exitcode -out=plan.out
-     - name: Exit if no changes
-       if: ${{ steps.plan.outputs.exitcode == 0 }}
-       run: exit 0
 
      - name: Terraform Apply
+       if: ${{ steps.plan.outputs.exitcode != 0 }}
        env:
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
