@@ -12,6 +12,7 @@ jobs:
      db_ip: ${{ steps.db.outputs.db_ip }}
      app_instance1_ip: ${{ steps.app1.outputs.app_instance1_ip }}
      app_instance2_ip: ${{ steps.app2.outputs.app_instance2_ip }}
+     exitcode: ${{ steps.plan.outputs.exitcode }}
     runs-on: ubuntu-latest
     env:
       TF_VAR_vpc_cidr: "10.1.0.0/16"
@@ -91,6 +92,7 @@ jobs:
 
   ansible:
     runs-on: ubuntu-latest
+    if: ${{ needs.terraform.outputs.exitcode != 0 }}
     needs: [terraform]
     steps:
       - name: Checkout code
