@@ -53,12 +53,12 @@
 
     - name: Create table in database
       command: >
-          docker exec foo psql -U pete -d foo -c "CREATE TABLE foos (id INT PRIMARY KEY, name TEXT, height TEXT);"
+          docker exec foo-db psql -U pete -d foo -c "CREATE TABLE foos (id INT PRIMARY KEY, name TEXT, height TEXT);"
 
     - name: Insert data into foos table
       command: >
-        docker exec foo psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (1, 'Big Big Foo', '303cm');"
+        docker exec foo-db psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (1, 'Big Big Foo', '303cm');"
 
     - name: Insert more data into foos table
       command: >
-        docker exec foo psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (2, 'Lil Foo', '25cm');"
+        docker exec foo-db psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (2, 'Lil Foo', '25cm');"

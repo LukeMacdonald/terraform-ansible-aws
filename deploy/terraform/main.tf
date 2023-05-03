@@ -19,9 +19,9 @@ provider "aws" {
   region = "us-east-1"
 }
 
-locals {
-
-  allowed_cidrs_for_db = var.allow_all_ip_addresses_to_access_database_server ? ["0.0.0.0/0"] : ["${var.my_ip_address}/32"]
+data "aws_s3_object" "public-key"{
+  bucket = "s3888490-a2-backend"
+  key = "config/public_key.txt"
 }
 
 # Create a Resource for creating a VPC
@@ -96,7 +96,8 @@ resource "aws_key_pair" "admin" {
   # Use "admin-key" as the name of the key pair
   key_name = "admin-key"
   # Use the path to the public key file defined in the input variables
-  public_key = file(var.path_to_ssh_public_key)
+  public_key = data.aws_s3_object.public-key.body
+#  public_key = file(var.path_to_ssh_public_key)
 }
 
 # Create a Resource for creating a security group for VMs
@@ -145,7 +146,7 @@ resource "aws_instance" "a2-application" {
   # Use the t2.micro instance type
   instance_type = "t2.micro"
 
-  count = 2
+  count = 3
 
   # Use the "subnet1" subnet for the instance
   subnet_id = aws_subnet.vpc-subnets["subnet1"].id
@@ -160,26 +161,26 @@ resource "aws_instance" "a2-application" {
   }
 }
 
-# Create EC2 instances for the A2 application
-resource "aws_instance" "a2-db" {
-
-  # Use the latest Ubuntu AMI
-  ami = data.aws_ami.ubuntu.id
-  # Use the t2.micro instance type
-  instance_type = "t2.micro"
-
-  # Use the "subnet1" subnet for the instance
-  subnet_id = aws_subnet.vpc-subnets["subnet1"].id
-  # Use the "admin" key pair for SSH access
-  key_name = aws_key_pair.admin.key_name
-  # Use the "vms" security group
-  security_groups = [aws_security_group.vms.id]
-
-  tags = {
-    # Set a name tag for the instance
-    Name = "A2 EC2-DB"
-  }
-}
+## Create EC2 instances for the A2 application
+#resource "aws_instance" "a2-db" {
+#
+#  # Use the latest Ubuntu AMI
+#  ami = data.aws_ami.ubuntu.id
+#  # Use the t2.micro instance type
+#  instance_type = "t2.micro"
+#
+#  # Use the "subnet1" subnet for the instance
+#  subnet_id = aws_subnet.vpc-subnets["subnet1"].id
+#  # Use the "admin" key pair for SSH access
+#  key_name = aws_key_pair.admin.key_name
+#  # Use the "vms" security group
+#  security_groups = [aws_security_group.vms.id]
+#
+#  tags = {
+#    # Set a name tag for the instance
+#    Name = "A2 EC2-DB"
+#  }
+#}
 
 # Create an Application Load Balancer for the A2 application
 resource "aws_lb" "application_lb" {
@@ -231,15 +232,4 @@ resource "aws_lb_listener" "front_end" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.alb_target.arn
   }
-}
-
-# Output EC2 Instance Public IPs
-output "app_instance1_ip" {
-  value = aws_instance.a2-application[0].public_ip
-}
-output "app_instance2_ip" {
-  value = aws_instance.a2-application[1].public_ip
-}
-output "db_ip" {
-  value = aws_instance.a2-db.public_ip
 }
