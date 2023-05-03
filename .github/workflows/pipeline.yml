@@ -2,10 +2,10 @@ name: SDAO A2 Pipeline
 on:
   push:
     branches:
-      - 'main'
+      - '*'
   pull_request:
     branches:
-      - 'main'
+      - '*'
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -52,36 +52,42 @@ jobs:
          cd deploy/terraform
          terraform apply -auto-approve -input=false -lock=false
 
-  clean-up:
-    needs: [terraform]
+     - name: Get Outputs
+       run: |
+         echo "::set-output name=db_ip::$(terraform output -raw db_ip)"
+         echo "::set-output name=app_instance1_ip::$(terraform output -raw app_instance1_ip)"
+         echo "::set-output name=app_instance2_ip::$(terraform output -raw app_instance2_ip)"
+
+  ansible:
     runs-on: ubuntu-latest
-    env:
-      TF_VAR_path_to_ssh_public_key: "../key.pub"
-      TF_VAR_my_ip_address: "123.3.247.60"
-      TF_VAR_allow_all_ip_addresses_to_access_database_server: "false"
-      TF_VAR_vpc_cidr: "10.1.0.0/16"
-      TF_VAR_subnets: '{"subnet1":{"cidr":"10.1.1.0/24","name":"public-1a","az":"us-east-1a"},"subnet2":{"cidr":"10.1.2.0/24","name":"public-1b","az":"us-east-1b"}}'
-      TF_VAR_vms: '{"app":{"count":2},"db":{"count":1}}'
+    needs: [terraform]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: latest
-      - name: Terraform Init
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      - name: Install Ansible
+        run: sudo apt-get update && sudo apt-get install -y ansible
+      - name: Create Inventory File
         run: |
-          cd deploy/terraform 
-          terraform init
-      - name: Terraform Destroy
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          cat << EOF > "deploy/ansible/inventory.yml"
+          db_servers:
+            hosts:
+              db1:
+                ansible_host: ${{ steps.output.outputs.db_ip }}
+                ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+          app_servers:
+            hosts:
+              app1:
+                ansible_host: ${{ steps.output.outputs.app_instance1_ip }}
+                ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+              app2:
+                ansible_host: ${{ steps.output.outputs.app_instance2_ip }}
+                ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+          EOF
+      - name: Run Database Playbook
         run: |
-          cd deploy/terraform 
-          terraform destroy -auto-approve -lock=false
+           cd deploy/ansible
+           ansible-playbook db-playbook.yml -i inventory.yml --private-key ${{ secrets.PRIVATE_KEY }}
+      - name: Run App Playbook
+        run: |
+           cd deploy/ansible
+           ansible-playbook app-playbook.yml -i inventory.yml --private-key ${{ secrets.PRIVATE_KEY }}

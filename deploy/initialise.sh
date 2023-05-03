@@ -4,6 +4,7 @@
 TERRAFORM_BACKEND_DIR="terraform/state-bucket"
 TERRAFORM_MAIN_DIR=".."
 ANSIBLE_DIR="../ansible"
+INVENTORY_FILE="../ansible/inventory.yml"
 
 # Define a function to apply Terraform
 apply_terraform() {
@@ -32,7 +33,27 @@ fi
 # Apply main configuration
 cd "$TERRAFORM_MAIN_DIR" || exit
 apply_terraform
-terraform output -json > ../config/output/data.json
+
+# Generate Ansible inventory file
+db_ip=$(terraform output -raw db_ip)
+app_instance1_ip=$(terraform output -raw app_instance1_ip)
+app_instance2_ip=$(terraform output -raw app_instance2_ip)
+
+cat << EOF > "$INVENTORY_FILE"
+db_servers:
+  hosts:
+    db1:
+      ansible_host: $db_ip
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+app_servers:
+  hosts:
+    app1:
+      ansible_host: $app_instance1_ip
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    app2:
+      ansible_host: $app_instance2_ip
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+EOF
 
 cd "$ANSIBLE_DIR" || exit
 ansible-playbook db-playbook.yml -i inventory.yml --private-key ~/.ssh/github_sdo_key
