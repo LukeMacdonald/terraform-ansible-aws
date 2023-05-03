@@ -72,7 +72,6 @@ jobs:
          cd deploy/terraform
          echo "app_instance2_ip='$(terraform output -raw app_instance2_ip)'" >> $GITHUB_OUTPUT 
     
-
   ansible:
     runs-on: ubuntu-latest
     if: ${{ needs.terraform.outputs.exitcode != 0 }}

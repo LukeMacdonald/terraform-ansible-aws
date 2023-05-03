@@ -40,6 +40,17 @@
         groups: docker
         append: yes
 
+    - name: Create directory if it doesn't exist
+      file:
+        path: /temp
+        state: directory
+
+    - name: Copy Postgres Initialization Script
+      copy:
+        src: volume/init.sql
+        dest: /temp/init.sql
+        remote_src: false
+
     - name: Create & run database container
       community.docker.docker_container:
         name: "foo-db"
@@ -50,17 +61,20 @@
           POSTGRES_DB=foo
         published_ports:
           - "0.0.0.0:5432:5432"
-    - name: Pause for 10 seconds
-      wait_for:
-        timeout: 10
-    - name: Create table in database
-      command: >
-          docker exec foo-db psql -U pete -d foo -c "CREATE TABLE foos (id INT PRIMARY KEY, name TEXT, height TEXT);"
+        volumes:
+          - "/temp/init.sql:/docker-entrypoint-initdb.d/init.sql"
 
-    - name: Insert data into foos table
-      command: >
-        docker exec foo-db psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (1, 'Big Big Foo', '303cm');"
-
-    - name: Insert more data into foos table
-      command: >
-        docker exec foo-db psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (2, 'Lil Foo', '25cm');"
+#    - name: Pause for 10 seconds
+#      wait_for:
+#        timeout: 10
+#    - name: Create table in database
+#      command: >
+#          docker exec foo-db psql -U pete -d foo -c "CREATE TABLE foos (id INT PRIMARY KEY, name TEXT, height TEXT);"
+#
+#    - name: Insert data into foos table
+#      command: >
+#        docker exec foo-db psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (1, 'Big Big Foo', '303cm');"
+#
+#    - name: Insert more data into foos table
+#      command: >
+#        docker exec foo-db psql -U pete -d foo -c "INSERT INTO foos (id, name, height) VALUES (2, 'Lil Foo', '25cm');"
