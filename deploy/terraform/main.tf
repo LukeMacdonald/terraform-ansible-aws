@@ -153,34 +153,14 @@ resource "aws_instance" "a2-application" {
   # Use the "admin" key pair for SSH access
   key_name = aws_key_pair.admin.key_name
   # Use the "vms" security group
-  security_groups = [aws_security_group.vms.id]
+  vpc_security_group_ids = [aws_security_group.vms.id]
 
   tags = {
     # Set a name tag for the instance
     Name = "A2 EC2-${count.index + 1}"
   }
-}
 
-## Create EC2 instances for the A2 application
-#resource "aws_instance" "a2-db" {
-#
-#  # Use the latest Ubuntu AMI
-#  ami = data.aws_ami.ubuntu.id
-#  # Use the t2.micro instance type
-#  instance_type = "t2.micro"
-#
-#  # Use the "subnet1" subnet for the instance
-#  subnet_id = aws_subnet.vpc-subnets["subnet1"].id
-#  # Use the "admin" key pair for SSH access
-#  key_name = aws_key_pair.admin.key_name
-#  # Use the "vms" security group
-#  security_groups = [aws_security_group.vms.id]
-#
-#  tags = {
-#    # Set a name tag for the instance
-#    Name = "A2 EC2-DB"
-#  }
-#}
+}
 
 # Create an Application Load Balancer for the A2 application
 resource "aws_lb" "application_lb" {
@@ -192,9 +172,11 @@ resource "aws_lb" "application_lb" {
   subnets = [for subnet in aws_subnet.vpc-subnets : subnet.id]
   # Use the "vms" security group
   security_groups = [aws_security_group.vms.id]
+
   # Disable deletion protection for the ALB
   enable_deletion_protection = false
 }
+
 
 # Create a target group for the ALB
 resource "aws_lb_target_group" "alb_target" {
@@ -217,6 +199,7 @@ resource "aws_lb_target_group_attachment" "alb_tg_attachment" {
   target_id = aws_instance.a2-application.*.id[count.index]
   # Use port 80
   port = 80
+
 }
 
 # Create a listener for the ALB
