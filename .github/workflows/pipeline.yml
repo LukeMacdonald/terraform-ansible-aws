@@ -9,9 +9,9 @@ on:
 jobs:
   terraform:
     outputs:
-     db_ip: ${{ steps.step1.outputs.db_ip }}
-     app_instance1_ip: ${{ steps.step1.outputs.app_instance1_ip }}
-     app_instance2_ip: ${{ steps.step1.outputs.app_instance2_ip }}
+     db_ip: ${{ steps.db.outputs.db_ip }}
+     app_instance1_ip: ${{ steps.app1.outputs.app_instance1_ip }}
+     app_instance2_ip: ${{ steps.app2.outputs.app_instance2_ip }}
     runs-on: ubuntu-latest
     env:
       TF_VAR_vpc_cidr: "10.1.0.0/16"
@@ -56,7 +56,8 @@ jobs:
          cd deploy/terraform
          terraform apply -auto-approve -input=false -lock=false
 
-     - name: Get Outputs
+     - name: Get DB IP Address Output
+       id: db
        env:
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -64,8 +65,25 @@ jobs:
        run: |
          cd deploy/terraform
          echo "db_ip='$(terraform output -raw db_ip)'" >> $GITHUB_OUTPUT
+     - name: Get App1 IP Address Output
+       id: app1
+       env:
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+       run: |
+         cd deploy/terraform
          echo "app_instance1_ip='$(terraform output -raw app_instance1_ip)'" >> $GITHUB_OUTPUT
-         echo "app_instance2_ip='$(terraform output -raw app_instance2_ip)'" >> $GITHUB_OUTPUT
+     - name: Get App1 IP Address Output
+       id: app2
+       env:
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+       run: |
+         cd deploy/terraform
+         echo "app_instance2_ip='$(terraform output -raw app_instance2_ip)'" >> $GITHUB_OUTPUT 
+    
 
   ansible:
     runs-on: ubuntu-latest
