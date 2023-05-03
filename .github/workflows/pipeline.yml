@@ -6,6 +6,10 @@ on:
   pull_request:
     branches:
       - 'main'
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 jobs:
   terraform:
     outputs:
@@ -27,10 +31,6 @@ jobs:
          terraform_version: latest
          terraform_wrapper: false
      - name: Terraform Init
-       env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform 
          terraform init
@@ -43,20 +43,12 @@ jobs:
 
      - name: Terraform Plan
        id: plan
-       env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: | 
          cd deploy/terraform
          terraform plan -input=false -lock=false -detailed-exitcode -out=plan.out
 
      - name: Terraform Apply
        if: ${{ steps.plan.outputs.exitcode != 0 }}
-       env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
          terraform apply -auto-approve -input=false -lock=false
@@ -64,30 +56,18 @@ jobs:
      - name: Get DB IP Address Output
        id: db
        if: ${{ steps.plan.outputs.exitcode != 0 }}
-       env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
          echo "db_ip=$(terraform output -raw db_ip)" >> "$GITHUB_OUTPUT"
      - name: Get App1 IP Address Output
        id: app1
        if: ${{ steps.plan.outputs.exitcode != 0 }}
-       env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
          echo "app_instance1_ip='$(terraform output -raw app_instance1_ip)'" >> $GITHUB_OUTPUT
      - name: Get App1 IP Address Output
        id: app2
        if: ${{ steps.plan.outputs.exitcode != 0 }}
-       env:
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
          echo "app_instance2_ip='$(terraform output -raw app_instance2_ip)'" >> $GITHUB_OUTPUT 
