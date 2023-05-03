@@ -53,6 +53,10 @@ jobs:
          terraform apply -auto-approve -input=false -lock=false
 
      - name: Get Outputs
+       env:
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
          echo "::set-output name=db_ip::$(terraform output -raw db_ip)"
