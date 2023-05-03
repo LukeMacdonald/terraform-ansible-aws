@@ -61,8 +61,6 @@ jobs:
   ansible:
     runs-on: ubuntu-latest
     needs: [terraform]
-    environment:
-      SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -88,7 +86,7 @@ jobs:
       - name: Copy private key
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 400 ~/.ssh/id_rsa
 
       - name: Run Database Playbook
