@@ -120,7 +120,7 @@ jobs:
 
       - name: Run Database Playbook
         run: |
-           cd deploy/ansible
+           cd deploy/ansible 
            ansible-playbook db-playbook.yml -i inventory.yml --private-key ~/.ssh/id_rsa
       - name: Run App Playbook
         run: |

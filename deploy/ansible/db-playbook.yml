@@ -50,7 +50,9 @@
           POSTGRES_DB=foo
         published_ports:
           - "0.0.0.0:5432:5432"
-
+    - name: Pause for 10 seconds
+      wait_for:
+        timeout: 10
     - name: Create table in database
       command: >
           docker exec foo-db psql -U pete -d foo -c "CREATE TABLE foos (id INT PRIMARY KEY, name TEXT, height TEXT);"
