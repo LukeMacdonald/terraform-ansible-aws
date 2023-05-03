@@ -2,10 +2,10 @@ name: SDAO A2 Pipeline
 on:
   push:
     branches:
-      - '*'
+      - 'main'
   pull_request:
     branches:
-      - '*'
+      - 'main'
 jobs:
   terraform:
     outputs:
