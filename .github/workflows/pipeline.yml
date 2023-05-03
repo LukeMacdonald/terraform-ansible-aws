@@ -24,6 +24,7 @@ jobs:
        uses: hashicorp/setup-terraform@v1
        with:
          terraform_version: latest
+         terraform_wrapper: false
      - name: Terraform Init
        env:
          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
