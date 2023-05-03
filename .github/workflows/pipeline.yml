@@ -63,9 +63,9 @@ jobs:
          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
-         echo "db_ip=$(terraform output -raw db_ip)" >> $GITHUB_OUTPUT
-         echo "app_instance1_ip=$(terraform output -raw app_instance1_ip)" >> $GITHUB_OUTPUT
-         echo "app_instance2_ip=$(terraform output -raw app_instance2_ip)" >> $GITHUB_OUTPUT
+         echo "db_ip='$(terraform output -raw db_ip)'" >> $GITHUB_OUTPUT
+         echo "app_instance1_ip='$(terraform output -raw app_instance1_ip)'" >> $GITHUB_OUTPUT
+         echo "app_instance2_ip='$(terraform output -raw app_instance2_ip)'" >> $GITHUB_OUTPUT
 
   ansible:
     runs-on: ubuntu-latest
