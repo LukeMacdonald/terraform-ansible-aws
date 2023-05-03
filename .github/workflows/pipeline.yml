@@ -8,6 +8,10 @@ on:
       - '*'
 jobs:
   terraform:
+    outputs:
+     db_ip: ${{ steps.step1.outputs.db_ip }}
+     app_instance1_ip: ${{ steps.step1.outputs.app_instance1_ip }}
+     app_instance2_ip: ${{ steps.step1.outputs.app_instance2_ip }}
     runs-on: ubuntu-latest
     env:
       TF_VAR_vpc_cidr: "10.1.0.0/16"
@@ -59,9 +63,9 @@ jobs:
          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
-         echo "::set-output name=db_ip::$(terraform output -raw db_ip)"
-         echo "::set-output name=app_instance1_ip::$(terraform output -raw app_instance1_ip)"
-         echo "::set-output name=app_instance2_ip::$(terraform output -raw app_instance2_ip)"
+         echo "db_ip=$(terraform output -raw db_ip)" >> $GITHUB_OUTPUT
+         echo "app_instance1_ip=$(terraform output -raw app_instance1_ip)" >> $GITHUB_OUTPUT
+         echo "app_instance2_ip=$(terraform output -raw app_instance2_ip)" >> $GITHUB_OUTPUT
 
   ansible:
     runs-on: ubuntu-latest
@@ -69,10 +73,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Install Ansible
-        run: sudo apt-get update && sudo apt-get install -y ansible
+#      - name: Install Ansible
+#        run: sudo apt-get update && sudo apt-get install -y ansible
       - name: Output Values
-        run: echo "${{steps.terraform.outputs.db_ip}}"
+        run: echo "${{needs.terraform.outputs.db_ip}}"
 #      - name: Create Inventory File
 #        run: |
 #          cat << EOF > "deploy/ansible/inventory.yml"
