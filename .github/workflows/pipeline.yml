@@ -72,15 +72,15 @@ jobs:
           db_servers:
             hosts:
               db1:
-                ansible_host: ${{ steps.output.outputs.db_ip }}
+                ansible_host: ${{ steps.terraform.outputs.db_ip }}
                 ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
           app_servers:
             hosts:
               app1:
-                ansible_host: ${{ steps.output.outputs.app_instance1_ip }}
+                ansible_host: ${{ steps.terraform.outputs.app_instance1_ip }}
                 ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
               app2:
-                ansible_host: ${{ steps.output.outputs.app_instance2_ip }}
+                ansible_host: ${{ steps.terraform.outputs.app_instance2_ip }}
                 ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
           EOF
           cat deploy/ansible/inventory.yml
