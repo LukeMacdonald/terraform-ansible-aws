@@ -64,7 +64,7 @@ jobs:
          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
        run: |
          cd deploy/terraform
-         echo "db_ip='$(terraform output -raw db_ip)'" >> $GITHUB_OUTPUT
+         echo "db_ip=$(terraform output -raw db_ip)" >> $GITHUB_OUTPUT
      - name: Get App1 IP Address Output
        id: app1
        env:
