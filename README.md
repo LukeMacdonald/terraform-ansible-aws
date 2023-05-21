@@ -94,3 +94,7 @@ This playbook is run after the db-playbook and is run on all the app_servers hos
 -	The ansible user is also added to the docker group for the same reasons as stated for the db-playbook.
 -	The docker container for the application to be run is then created and configured to be run on port 3001
 -	The container's port 3001 is being published on the host machine's IP address 0.0.0.0 on port 80 therefore any traffic directed to port 80 on the host machine will be forwarded to port 3001 of the container.
+
+## Shell Script
+
+## GitHub Actions Pipeline
