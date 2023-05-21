@@ -8,16 +8,26 @@ INVENTORY_FILE="../ansible/inventory.yml"
 
 # Define a function to apply Terraform
 apply_terraform() {
-    terraform init
-    terraform plan
-    terraform apply -auto-approve
+  terraform init
+  terraform plan -out=tfplan -detailed-exitcode
+  PLAN_EXIT_CODE=$?
+  if [ $PLAN_EXIT_CODE -eq 0 ]; then
+    echo "No changes detected, skipping apply."
+    exit
+  elif [ $PLAN_EXIT_CODE -eq 1 ]; then
+    echo "Error executing plan, please review logs."
+  else
+    echo "Changes detected, applying plan..."
+    terraform apply "tfplan"
+    rm tfplan
+  fi
 }
 
 # Check that Terraform is installed
 if ! command -v terraform &> /dev/null
 then
-    echo "Error: Terraform not found"
-    exit 1
+  echo "Error: Terraform not found"
+  exit 1
 fi
 
 # Apply backend configuration
@@ -27,7 +37,7 @@ cd "$TERRAFORM_BACKEND_DIR" || exit
 if terraform state show aws_s3_bucket.state_bucket &> /dev/null; then
   echo "State Bucket already exists. Skipping apply."
 else
-   apply_terraform
+  apply_terraform
 fi
 
 # Apply main configuration
