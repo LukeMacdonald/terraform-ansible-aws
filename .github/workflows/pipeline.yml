@@ -43,7 +43,7 @@ jobs:
        id: plan
        run: | 
          cd deploy/terraform
-         terraform plan -input=false -lock=false -detailed-exitcode 
+         terraform plan -input=false -lock=false -detailed-exitcode -out=plan.out
 
      - name: Terraform Apply
        if: ${{ steps.plan.outputs.exitcode != 0 }}
