@@ -9,6 +9,7 @@ INVENTORY_FILE="../ansible/inventory.yml"
 # Define a function to apply Terraform
 apply_terraform() {
   terraform init
+  terraform fmt
   terraform plan -out=tfplan -detailed-exitcode
   PLAN_EXIT_CODE=$?
   if [ $PLAN_EXIT_CODE -eq 0 ]; then

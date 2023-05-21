@@ -23,7 +23,7 @@ variable "bucket_details" {
   description = "Stores data of the s3 bucket used for public key (name of bucket, key to public key stored in bucket)"
 }
 variable "sg_rule_types" {
-  type        = set(string)
+  type        = list(string)
   description = "Stores the type of security group rules (ingress, egress)"
 }
 variable "sg_names" {

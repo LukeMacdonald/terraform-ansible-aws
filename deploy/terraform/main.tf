@@ -86,7 +86,6 @@ resource "aws_key_pair" "admin" {
   key_name = "admin-key"
   # Use the path to the public key file defined in the input variables
   public_key = data.aws_s3_object.public-key.body
-  #  public_key = file(var.path_to_ssh_public_key)
 }
 
 # Create a Resource for creating a security group for VMs
@@ -94,6 +93,11 @@ resource "aws_security_group" "sg" {
   count  = length(var.sg_names)
   name   = var.sg_names[count.index]
   vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    # Set a name tag for the instance
+    Name = var.sg_names[count.index]
+  }
 
   # Allow inbound SSH traffic
   ingress {
@@ -128,8 +132,8 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_security_group_rule" "postgres_egress" {
-  for_each          = var.sg_rule_types
-  type              = each.value
+  count             = length(var.sg_rule_types)
+  type              = var.sg_rule_types[count.index]
   from_port         = var.postgres
   to_port           = var.postgres
   protocol          = var.sg_rules["protocol"]
