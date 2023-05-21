@@ -1,5 +1,5 @@
 # Value of Region that Resources are created in
-region   = "us-east-1"
+region = "us-east-1"
 
 # Values Relating to VPC and its Subnets
 vpc_cidr = "10.1.0.0/16"

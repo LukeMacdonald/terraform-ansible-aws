@@ -128,12 +128,12 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_security_group_rule" "postgres_egress" {
-  for_each    = var.sg_rule_types
-  type        = each.value
-  from_port   = var.postgres
-  to_port     = var.postgres
-  protocol    = var.sg_rules["protocol"]
-  cidr_blocks = ["${aws_instance.a2-db.public_ip}/32","${aws_instance.a2-application[0].public_ip}/32","${aws_instance.a2-application[1].public_ip}/32"]
+  for_each          = var.sg_rule_types
+  type              = each.value
+  from_port         = var.postgres
+  to_port           = var.postgres
+  protocol          = var.sg_rules["protocol"]
+  cidr_blocks       = ["${aws_instance.a2-db.public_ip}/32", "${aws_instance.a2-application[0].public_ip}/32", "${aws_instance.a2-application[1].public_ip}/32"]
   security_group_id = aws_security_group.sg[0].id
 }
 
