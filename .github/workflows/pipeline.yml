@@ -8,10 +8,9 @@ on:
       - 'main'
   workflow_dispatch:
     inputs:
-      api_key:
-        description: 'API key for authentication'
+      access_token:
+        description: 'Personal access token'
         required: true
-        default: ${{ secrets.API_KEY }}
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
