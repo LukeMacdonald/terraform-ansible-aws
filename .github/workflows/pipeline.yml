@@ -43,13 +43,13 @@ jobs:
        id: plan
        run: | 
          cd deploy/terraform
-         terraform plan -input=false -lock=false -detailed-exitcode -out=plan.out
+         terraform plan -input=false -lock=false -detailed-exitcode 
 
      - name: Terraform Apply
        if: ${{ steps.plan.outputs.exitcode != 0 }}
        run: |
          cd deploy/terraform
-         terraform apply "plan.out" -auto-approve -input=false -lock=false 
+         terraform apply -auto-approve -input=false -lock=false 
 
      - name: Get DB IP Address Output
        id: db
